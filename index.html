@@ -15,33 +15,39 @@
       height: 100%;
       border: none;
     }
+    button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
-  <!-- Nhúng video từ Vimeo với autoplay và loop -->
-  <iframe id="player" src="https://player.vimeo.com/video/1119018919?autoplay=1&loop=1" allow="autoplay" frameborder="0"></iframe>
+
+  <iframe
+    id="player"
+    src="https://player.vimeo.com/video/1119005050?autoplay=1"
+    allow="autoplay; fullscreen"
+    allowfullscreen
+  ></iframe>
+
+  <!-- Vimeo Player API -->
+  <script src="https://player.vimeo.com/api/player.js"></script>
 
   <script>
-    // Lấy phần tử iframe
-    const iframe = document.getElementById('player');
-    
-    // Hàm yêu cầu fullscreen khi trang tải
-    function requestFullscreen() {
-      if (iframe.requestFullscreen) {
-        iframe.requestFullscreen();
-      } else if (iframe.mozRequestFullScreen) { // Firefox
-        iframe.mozRequestFullScreen();
-      } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari
-        iframe.webkitRequestFullscreen();
-      } else if (iframe.msRequestFullscreen) { // IE/Edge
-        iframe.msRequestFullscreen();
-      }
-    }
+    // 🔁 Thay ID ở đây
+    const videos = ["1119005050", "1119018919", "1119282836"]; // 👉 Chỉ cần thay 2 ID là xong
 
-    // Chạy hàm fullscreen khi trang được tải
-    window.onload = function() {
-      requestFullscreen();
-    };
+    let index = 0;
+    const player = new Vimeo.Player(document.getElementById('player'));
+
+    player.on('ended', () => {
+      index = (index + 1) % videos.length;
+      player.loadVideo(videos[index]);
+    });
   </script>
 </body>
 </html>
