@@ -11,43 +11,57 @@
 
   <iframe id="player" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
+  <!-- Vimeo API -->
+  <script src="https://player.vimeo.com/api/player.js"></script>
+
   <script>
-    // Danh sách: video (vimeo) và báo cáo (powerbi)
+    // Playlist: video (vimeo) và báo cáo (powerbi)
     const playlist = [
       {type:"vimeo", id:"1119332063"},
       {type:"vimeo", id:"1119332013"},
-      {type:"vimeo", id:"1119005050"}
+      {type:"vimeo", id:"1119005050"},
+      // ví dụ thêm report
+      // {type:"powerbi", url:"https://app.powerbi.com/view?r=XXXXX"}
     ];
 
-    let i = 0, timer, refresher;
+    let i = 0, timer, refresher, player;
 
     function load(item){
-      clearTimeout(timer); 
+      clearTimeout(timer);
       clearInterval(refresher);
+
       const f = document.getElementById("player");
 
-      if(item.type==="vimeo"){
-        // Nhúng trực tiếp link Vimeo iframe
+      if(item.type === "vimeo"){
+        // tạo player Vimeo
         f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
-        // set thời gian tạm 3 phút (chỉnh lại theo độ dài thật)
-        timer = setTimeout(next, 3*60*1000);
-      } else {
-        // Nhúng Power BI
+        player = new Vimeo.Player(f);
+
+        // khi video kết thúc → nhảy tiếp
+        player.on("ended", next);
+
+      } else if(item.type === "powerbi"){
         f.src = item.url;
+        // sau 5 phút → sang nội dung kế
         timer = setTimeout(next, 5*60*1000);
-        refresher = setInterval(()=>{f.src=item.url}, 30*1000);
+
+        // cứ 30s refresh lại để restart Play Axis
+        refresher = setInterval(()=>{
+          f.src = item.url;
+        }, 30*1000);
       }
     }
 
     function next(){
-      i = (i+1)%playlist.length;
+      i = (i+1) % playlist.length;
       load(playlist[i]);
     }
 
-    // Bắt đầu
+    // bắt đầu
     load(playlist[i]);
   </script>
 
 </body>
 </html>
+
 
