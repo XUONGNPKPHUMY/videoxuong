@@ -17,7 +17,7 @@
       {type:"vimeo", id:"1119332063"},
       {type:"vimeo", id:"1119332013"},
       {type:"vimeo", id:"1119005050"}
-      // {type:"powerbi", url:"https://app.powerbi.com/view?r=XXXXX"}
+      // {type:"powerbi", url:"https://app.powerbi.com/view?r=XXXX"}
     ];
 
     let i = 0, timer, refresher, player;
@@ -29,18 +29,24 @@
       const f = document.getElementById("player");
 
       if(item.type === "vimeo"){
-        f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
-
-        // tạo player mới sau 500ms để đảm bảo iframe đã load
-        setTimeout(() => {
-          player = new Vimeo.Player(f);
+        if(!player){
+          // khởi tạo player lần đầu
+          player = new Vimeo.Player(f, {
+            id: item.id,
+            autoplay: true,
+            muted: true
+          });
           player.on("ended", next);
-        }, 500);
-
+        } else {
+          // chỉ đổi video
+          player.loadVideo(item.id).then(() => {
+            player.play();
+          });
+        }
       } else if(item.type === "powerbi"){
         f.src = item.url;
-        timer = setTimeout(next, 5*60*1000);
-        refresher = setInterval(() => { f.src = item.url }, 30*1000);
+        timer = setTimeout(next, 5*60*1000);   // 5 phút đổi sang nội dung khác
+        refresher = setInterval(() => { f.src = item.url }, 30*1000); // refresh Play Axis
       }
     }
 
