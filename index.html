@@ -13,11 +13,12 @@
 
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
+    // Playlist: video Vimeo và Power BI
     const playlist = [
       {type:"vimeo", id:"1119332063"},
       {type:"vimeo", id:"1119332013"},
       {type:"vimeo", id:"1119005050"}
-      // {type:"powerbi", url:"https://app.powerbi.com/view?r=XXXX"}
+      // {type:"powerbi", url:"https://app.powerbi.com/view?r=xxxx"}
     ];
 
     let i = 0, timer, refresher, player;
@@ -30,23 +31,23 @@
 
       if(item.type === "vimeo"){
         if(!player){
-          // khởi tạo player lần đầu
+          // Tạo player một lần duy nhất
           player = new Vimeo.Player(f, {
             id: item.id,
             autoplay: true,
             muted: true
           });
-          player.on("ended", next);
+          player.on("ended", next); // Khi hết video → next
         } else {
-          // chỉ đổi video
-          player.loadVideo(item.id).then(() => {
-            player.play();
-          });
+          // Chỉ đổi video
+          player.loadVideo(item.id).then(() => player.play());
         }
       } else if(item.type === "powerbi"){
+        // Với Power BI thì gán src
+        player = null; // xoá player tạm để khi quay lại video tạo lại
         f.src = item.url;
-        timer = setTimeout(next, 5*60*1000);   // 5 phút đổi sang nội dung khác
-        refresher = setInterval(() => { f.src = item.url }, 30*1000); // refresh Play Axis
+        timer = setTimeout(next, 5*60*1000); // 5 phút đổi
+        refresher = setInterval(() => { f.src = item.url }, 30*1000); // 30s refresh
       }
     }
 
