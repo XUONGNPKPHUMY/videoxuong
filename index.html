@@ -15,12 +15,10 @@
   <script src="https://player.vimeo.com/api/player.js"></script>
 
   <script>
-    // Playlist: video (vimeo) và báo cáo (powerbi)
     const playlist = [
       {type:"vimeo", id:"1119332063"},
       {type:"vimeo", id:"1119332013"},
       {type:"vimeo", id:"1119005050"},
-      // ví dụ thêm report
       // {type:"powerbi", url:"https://app.powerbi.com/view?r=XXXXX"}
     ];
 
@@ -33,22 +31,21 @@
       const f = document.getElementById("player");
 
       if(item.type === "vimeo"){
-        // tạo player Vimeo
+        // gán src trước
         f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
-        player = new Vimeo.Player(f);
 
-        // khi video kết thúc → nhảy tiếp
-        player.on("ended", next);
+        // đợi iframe load xong mới tạo player
+        f.onload = () => {
+          player = new Vimeo.Player(f);
+          player.on("ended", next);
+        };
 
       } else if(item.type === "powerbi"){
         f.src = item.url;
-        // sau 5 phút → sang nội dung kế
+        // 5 phút sang nội dung kế tiếp
         timer = setTimeout(next, 5*60*1000);
-
-        // cứ 30s refresh lại để restart Play Axis
-        refresher = setInterval(()=>{
-          f.src = item.url;
-        }, 30*1000);
+        // 30s refresh lại để restart Play Axis
+        refresher = setInterval(()=>{ f.src = item.url }, 30*1000);
       }
     }
 
@@ -57,11 +54,9 @@
       load(playlist[i]);
     }
 
-    // bắt đầu
+    // start
     load(playlist[i]);
   </script>
 
 </body>
 </html>
-
-
