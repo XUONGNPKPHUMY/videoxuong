@@ -11,7 +11,6 @@
 
   <iframe id="player" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
-  <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
     // Danh sách: video (vimeo) và báo cáo (powerbi)
     const playlist = [
@@ -20,21 +19,24 @@
       {type:"vimeo", id:"1119005050"}
     ];
 
-    let i = 0, player, timer, refresher;
+    let i = 0, timer, refresher;
 
     function load(item){
-      clearTimeout(timer); clearInterval(refresher);
+      clearTimeout(timer); 
+      clearInterval(refresher);
+      const f = document.getElementById("player");
+
       if(item.type==="vimeo"){
-        player = new Vimeo.Player(document.getElementById("player"), {
-          id:item.id, autoplay:true
-        });
-        player.on("ended", next);
+        // Nhúng video Vimeo trực tiếp
+        f.src = "https://player.vimeo.com/video/" + item.id + "?autoplay=1&muted=0";
+        // Nếu không bắt được ended, tạm set thời lượng cố định (vd: 3 phút mỗi video)
+        timer = setTimeout(next, 3*60*1000);
       } else {
-        const f = document.getElementById("player");
+        // Nhúng Power BI
         f.src = item.url;
-        // 5 phút chuyển sang nội dung kế
+        // 5 phút đổi sang nội dung kế tiếp
         timer = setTimeout(next, 5*60*1000);
-        // 30s reload lại để restart Play Axis
+        // 30s refresh để restart Play Axis
         refresher = setInterval(()=>{f.src=item.url}, 30*1000);
       }
     }
@@ -44,10 +46,9 @@
       load(playlist[i]);
     }
 
-    // bắt đầu
+    // Bắt đầu
     load(playlist[i]);
   </script>
 
 </body>
 </html>
-
