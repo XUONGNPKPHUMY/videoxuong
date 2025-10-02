@@ -3,61 +3,72 @@
 <head>
   <title>Video + Power BI xen kẽ</title>
   <style>
-    html, body {margin:0;padding:0;height:100%;background:black;overflow:hidden;}
-    iframe {width:100%;height:100%;border:none;}
+    html, body {
+      margin:0; padding:0; height:100%;
+      background:black; overflow:hidden;
+    }
+    iframe {
+      width:100%; height:100%; border:none;
+    }
   </style>
 </head>
 <body>
 
-  <iframe id="player" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <!-- Video đầu tiên -->
+  <iframe
+    id="player"
+    src="https://player.vimeo.com/video/1119332063?autoplay=1&muted=1"
+    allow="autoplay; fullscreen"
+    allowfullscreen
+  ></iframe>
 
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
-    // Playlist: video Vimeo và Power BI
+    // Playlist: video (Vimeo) và báo cáo (Power BI)
     const playlist = [
       {type:"vimeo", id:"1119332063"},
       {type:"vimeo", id:"1119332013"},
       {type:"vimeo", id:"1119005050"}
-      // {type:"powerbi", url:"https://app.powerbi.com/view?r=xxxx"}
+     // {type:"powerbi", url:"https://app.powerbi.com/view?r=yyyy"}
     ];
 
-    let i = 0, timer, refresher, player;
+    let index = 0;
+    let player = new Vimeo.Player(document.getElementById("player"));
+    let timer, refresher;
+
+    // Gắn sự kiện ended cho video
+    player.on("ended", next);
 
     function load(item){
       clearTimeout(timer);
       clearInterval(refresher);
-
       const f = document.getElementById("player");
 
       if(item.type === "vimeo"){
+        // Nếu player chưa có (do trước đó là Power BI) thì tạo mới
         if(!player){
-          // Tạo player một lần duy nhất
-          player = new Vimeo.Player(f, {
-            id: item.id,
-            autoplay: true,
-            muted: true
-          });
-          player.on("ended", next); // Khi hết video → next
+          f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
+          player = new Vimeo.Player(f);
+          player.on("ended", next);
         } else {
-          // Chỉ đổi video
+          // Đổi video trong player
           player.loadVideo(item.id).then(() => player.play());
         }
       } else if(item.type === "powerbi"){
-        // Với Power BI thì gán src
-        player = null; // xoá player tạm để khi quay lại video tạo lại
+        // Hủy player để chuyển sang iframe Power BI
+        player = null;
         f.src = item.url;
-        timer = setTimeout(next, 5*60*1000); // 5 phút đổi
-        refresher = setInterval(() => { f.src = item.url }, 30*1000); // 30s refresh
+        // Sau 5 phút tự next
+        timer = setTimeout(next, 5*60*1000);
+        // Cứ 30 giây reload lại (reset Play Axis)
+        refresher = setInterval(() => { f.src = item.url }, 30*1000);
       }
     }
 
     function next(){
-      i = (i+1) % playlist.length;
-      load(playlist[i]);
+      index = (index + 1) % playlist.length;
+      load(playlist[index]);
     }
-
-    // bắt đầu
-    load(playlist[i]);
   </script>
 
 </body>
