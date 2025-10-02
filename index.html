@@ -1,57 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fullscreen Loop Vimeo Video</title>
+  <title>Video + Power BI xen kẽ</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: black;
-      overflow: hidden;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      padding: 10px 20px;
-      font-size: 18px;
-    }
+    html, body {margin:0;padding:0;height:100%;background:black;overflow:hidden;}
+    iframe {width:100%;height:100%;border:none;}
   </style>
 </head>
 <body>
 
-  <iframe
-    id="player"
-    src="https://player.vimeo.com/video/1119332013?autoplay=1"
-    allow="autoplay; fullscreen"
-    allowfullscreen
-  ></iframe>
+  <iframe id="player" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
-  <!-- Vimeo Player API -->
   <script src="https://player.vimeo.com/api/player.js"></script>
-
   <script>
-    // 🔁 Thay ID ở đây
-    const videos = ["1119332013","1119328086","1119005050","1119294311","1119327785", "1119018919","1119295966","1119332063", "1119282836"]; // 👉 Chỉ cần thay 2 ID là xong
+    // Danh sách: video (vimeo) và báo cáo (powerbi)
+    const playlist = [
+      {type:"vimeo", id:"1119332013"},
+      {type:"vimeo", id:"1119005050"},
+      {type:"vimeo", id:"1119282836"}
+    ];
 
-    let index = 0;
-    const player = new Vimeo.Player(document.getElementById('player'));
+    let i = 0, player, timer, refresher;
 
-    player.on('ended', () => {
-      index = (index + 1) % videos.length;
-      player.loadVideo(videos[index]);
-    });
+    function load(item){
+      clearTimeout(timer); clearInterval(refresher);
+      if(item.type==="vimeo"){
+        player = new Vimeo.Player(document.getElementById("player"), {
+          id:item.id, autoplay:true
+        });
+        player.on("ended", next);
+      } else {
+        const f = document.getElementById("player");
+        f.src = item.url;
+        // 5 phút chuyển sang nội dung kế
+        timer = setTimeout(next, 5*60*1000);
+        // 30s reload lại để restart Play Axis
+        refresher = setInterval(()=>{f.src=item.url}, 30*1000);
+      }
+    }
+
+    function next(){
+      i = (i+1)%playlist.length;
+      load(playlist[i]);
+    }
+
+    // bắt đầu
+    load(playlist[i]);
   </script>
+
 </body>
 </html>
-
-
-
-
