@@ -27,16 +27,14 @@
       const f = document.getElementById("player");
 
       if(item.type==="vimeo"){
-        // Nhúng video Vimeo trực tiếp
-        f.src = "https://player.vimeo.com/video/" + item.id + "?autoplay=1&muted=0";
-        // Nếu không bắt được ended, tạm set thời lượng cố định (vd: 3 phút mỗi video)
+        // Nhúng trực tiếp link Vimeo iframe
+        f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
+        // set thời gian tạm 3 phút (chỉnh lại theo độ dài thật)
         timer = setTimeout(next, 3*60*1000);
       } else {
         // Nhúng Power BI
         f.src = item.url;
-        // 5 phút đổi sang nội dung kế tiếp
         timer = setTimeout(next, 5*60*1000);
-        // 30s refresh để restart Play Axis
         refresher = setInterval(()=>{f.src=item.url}, 30*1000);
       }
     }
@@ -52,3 +50,4 @@
 
 </body>
 </html>
+
