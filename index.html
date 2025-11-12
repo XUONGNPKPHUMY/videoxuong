@@ -27,9 +27,7 @@
     // Playlist: video (Vimeo) và báo cáo (Power BI)
     const playlist = [
       {type:"vimeo", id:"1119332063"},
-      {type:"vimeo", id:"1119332013"},
-      {type:"vimeo", id:"1119005050"}
-     // {type:"powerbi", url:"https://app.powerbi.com/view?r=yyyy"}
+      {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiZDRlZTM3MWItZWU5YS00OTJjLThmZDAtODkwMjg0YmZiYjJlIiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"}
     ];
 
     let index = 0;
@@ -60,8 +58,8 @@
         f.src = item.url;
         // Sau 5 phút tự next
         timer = setTimeout(next, 5*60*1000);
-        // Cứ 30 giây reload lại (reset Play Axis)
-        refresher = setInterval(() => { f.src = item.url }, 30*1000);
+        // Cứ 60 giây reload lại (reset Play Axis)
+        refresher = setInterval(() => { f.src = item.url }, 60*1000);
       }
     }
 
@@ -73,3 +71,4 @@
 
 </body>
 </html>
+
