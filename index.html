@@ -64,11 +64,24 @@
       } else if(item.type === "powerbi"){
         // Hủy player để chuyển sang iframe Power BI
         player = null;
-        f.src = item.url;
+
+        // ✅ Tạo iframe mới cho Power BI để full màn hình, tránh lỗi over
+        const newFrame = document.createElement("iframe");
+        newFrame.src = item.url;
+        newFrame.allow = "fullscreen";
+        newFrame.style.width = "100%";
+        newFrame.style.height = "100%";
+        newFrame.style.border = "none";
+
+        const oldFrame = document.getElementById("player");
+        oldFrame.replaceWith(newFrame);
+        newFrame.id = "player";
+
         // Sau 5 phút tự next
         timer = setTimeout(next, 5*60*1000);
-        // Cứ 60 giây reload lại (reset Play Axis)
-        refresher = setInterval(() => { f.src = item.url }, 90*1000);
+
+        // Cứ 90 giây reload lại (reset Play Axis)
+        refresher = setInterval(() => { newFrame.src = item.url }, 90*1000);
       }
     }
 
@@ -80,3 +93,4 @@
 
 </body>
 </html>
+
