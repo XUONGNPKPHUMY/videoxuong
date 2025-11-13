@@ -4,17 +4,38 @@
   <title>Video + Power BI xen kẽ</title>
   <style>
     html, body {
-      margin:0; padding:0; height:100%;
-      background:black; overflow:hidden;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: black;
+      overflow: hidden;
     }
+
     iframe {
-      width:100%; height:100%; border:none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100vh;
+      transform: translate(-50%, -50%);
+      border: none;
+      background: black;
+      object-fit: contain; /* Giữ tỉ lệ, không tràn */
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* Nếu TV overscan (zoom nhẹ), thu nhỏ lại một chút */
+    @media (min-width: 1500px) {
+      iframe {
+        transform: translate(-50%, -50%) scale(0.98);
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Video đầu tiên -->
   <iframe
     id="player"
     src="https://player.vimeo.com/video/1119332063?autoplay=1&muted=1"
@@ -24,26 +45,19 @@
 
   <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
-    // Playlist: video (Vimeo) và báo cáo (Power BI)
     const playlist = [
       {type:"vimeo", id:"1119332063"},
       {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiZDRlZTM3MWItZWU5YS00OTJjLThmZDAtODkwMjg0YmZiYjJlIiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
-      //muc bon
-       {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiNjM4Yjc3NDgtZGU5OS00MjZlLTk2NGItZWEwMjBiODljMzY0IiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
-     // dauboc
+      {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiNjM4Yjc3NDgtZGU5OS00MjZlLTk2NGItZWEwMjBiODljMzY0IiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
       {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiMDg0OWRiYjctNTA1NS00YzZjLWE0ZGEtN2MxYjU3MGU3M2FkIiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
-      //phutro
-        {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiODIxNGVhYmMtNjYzYS00N2I0LWIzZjYtNTU1YzUyNzM0ZWMxIiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
-      //ETP
-        {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiMGQwZjUyZDItOGJjNy00MjlmLWFkODUtZjg3ZTRiOWJlZTg0IiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"}
-      //KPI
+      {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiODIxNGVhYmMtNjYzYS00N2I0LWIzZjYtNTU1YzUyNzM0ZWMxIiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"},
+      {type:"powerbi", url:"https://app.powerbi.com/view?r=eyJrIjoiMGQwZjUyZDItOGJjNy00MjlmLWFkODUtZjg3ZTRiOWJlZTg0IiwidCI6IjQ2NmQwOWI5LTRkNGItNGQ1MC1iMmY1LTM3YTNjMWY3ZWI4YiIsImMiOjEwfQ%3D%3D"}
     ];
 
     let index = 0;
     let player = new Vimeo.Player(document.getElementById("player"));
     let timer, refresher;
 
-    // Gắn sự kiện ended cho video
     player.on("ended", next);
 
     function load(item){
@@ -52,36 +66,19 @@
       const f = document.getElementById("player");
 
       if(item.type === "vimeo"){
-        // Nếu player chưa có (do trước đó là Power BI) thì tạo mới
         if(!player){
           f.src = `https://player.vimeo.com/video/${item.id}?autoplay=1&muted=1`;
           player = new Vimeo.Player(f);
           player.on("ended", next);
         } else {
-          // Đổi video trong player
           player.loadVideo(item.id).then(() => player.play());
         }
-      } else if(item.type === "powerbi"){
-        // Hủy player để chuyển sang iframe Power BI
+      } 
+      else if(item.type === "powerbi"){
         player = null;
-
-        // ✅ Tạo iframe mới cho Power BI để full màn hình, tránh lỗi over
-        const newFrame = document.createElement("iframe");
-        newFrame.src = item.url;
-        newFrame.allow = "fullscreen";
-        newFrame.style.width = "100%";
-        newFrame.style.height = "100%";
-        newFrame.style.border = "none";
-
-        const oldFrame = document.getElementById("player");
-        oldFrame.replaceWith(newFrame);
-        newFrame.id = "player";
-
-        // Sau 5 phút tự next
+        f.src = item.url;
         timer = setTimeout(next, 5*60*1000);
-
-        // Cứ 90 giây reload lại (reset Play Axis)
-        refresher = setInterval(() => { newFrame.src = item.url }, 90*1000);
+        refresher = setInterval(() => { f.src = item.url }, 90*1000);
       }
     }
 
@@ -93,5 +90,3 @@
 
 </body>
 </html>
-
-
