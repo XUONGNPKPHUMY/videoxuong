@@ -61,15 +61,17 @@
           // Đổi video trong player
           player.loadVideo(item.id).then(() => player.play());
         }
-      } else if(item.type === "powerbi"){
-        // Hủy player để chuyển sang iframe Power BI
-        player = null;
-        f.src = item.url;
-        // Sau 5 phút tự next
-        timer = setTimeout(next, 5*60*1000);
-        // Cứ 60 giây reload lại (reset Play Axis)
-        refresher = setInterval(() => { f.src = item.url }, 90*1000);
-      }
+} else if(item.type === "powerbi"){
+    // Hủy player để chuyển sang iframe Power BI
+    player = null;
+    // Thêm &fullscreen=true vào URL
+    let url = item.url.includes('?') ? item.url + '&fullscreen=true' : item.url + '?fullscreen=true';
+    f.src = url;
+    // Sau 5 phút tự next
+    timer = setTimeout(next, 5*60*1000);
+    // Cứ 90 giây reload lại (reset Play Axis)
+    refresher = setInterval(() => { f.src = url }, 90*1000);
+}
     }
 
     function next(){
@@ -80,7 +82,6 @@
 
 </body>
 </html>
-
 
 
 
