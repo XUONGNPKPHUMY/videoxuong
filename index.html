@@ -60,7 +60,7 @@
 
     // Gắn sự kiện ended cho video
     player.on("ended", next);
-
+    player.ready().then(() => player.play());
     function load(item){
       clearTimeout(timer);
       clearInterval(refresher);
@@ -95,6 +95,7 @@
 
 </body>
 </html>
+
 
 
 
