@@ -129,8 +129,8 @@
       else if(item.type === "powerbi"){
         player = null;
         f.src = item.url;
-        timer = setTimeout(next, 1*60*1000);
-        refresher = setInterval(() => { f.src = item.url }, 30*1000);
+        timer = setTimeout(next, 30*1000);
+        refresher = setInterval(() => { f.src = item.url }, 15*1000);
       }
     }
 
